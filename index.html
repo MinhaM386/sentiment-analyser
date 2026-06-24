@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentiment Analyzer - Analyze Text Sentiment Instantly</title>
+  <meta name="description" content="A beginner-friendly, beautifully designed rule-based Sentiment Analyzer that detects positive, neutral, and negative feelings in text instantly.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <header>
+      <h1>Sentiment Analyzer</h1>
+      <p>Enter a sentence or paragraph to discover its emotional tone.</p>
+    </header>
+
+    <!-- Main Analyzer Card -->
+    <main class="card" id="analyzerCard">
+      
+      <!-- Input Group -->
+      <div class="input-group">
+        <div class="input-header">
+          <label for="textInput">Your Text</label>
+          <span class="char-counter" id="charCounter">0 / 500 characters</span>
+        </div>
+        
+        <div class="textarea-wrapper">
+          <textarea 
+            id="textInput" 
+            placeholder="Type or paste your text here (e.g., 'I am having a wonderful day, everything is fantastic!')" 
+            maxlength="500"
+            autocomplete="off"
+            spellcheck="true"
+          ></textarea>
+          <button class="clear-btn" id="clearBtn" title="Clear text" aria-label="Clear text">✕</button>
+        </div>
+      </div>
+
+      <!-- Error / Empty Input Message -->
+      <div class="error-msg" id="errorMsg" role="alert">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <span id="errorText">Please enter some text before analyzing.</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="analyze-btn" id="analyzeBtn">
+          <span>Analyze Sentiment</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </button>
+      </div>
+
+    </main>
+
+    <!-- Results Section (Visible after analysis) -->
+    <section class="result-container" id="resultContainer">
+      <div class="result-card" id="resultCard">
+        
+        <!-- Result Header -->
+        <div class="result-header">
+          <div class="emoji-wrapper" id="resultEmoji">😐</div>
+          <div class="result-summary-text">
+            <span class="result-label">Detected Sentiment</span>
+            <span class="result-value" id="resultValue">Neutral</span>
+          </div>
+        </div>
+
+        <!-- Sentiment Score Visualization -->
+        <div class="score-section">
+          <div class="score-meta">
+            <span class="score-title">Sentiment Score Breakdown</span>
+            <span class="score-number" id="scoreNumber">Score: 0</span>
+          </div>
+          <div class="score-track" id="scoreTrack">
+            <!-- Dynamic fill bars based on sentiment ratio -->
+            <div class="score-fill-pos" id="fillPos"></div>
+            <div class="score-fill-neu" id="fillNeu"></div>
+            <div class="score-fill-neg" id="fillNeg"></div>
+          </div>
+        </div>
+
+        <!-- Word Match Analysis -->
+        <div class="matches-section">
+          <h4>Matched Sentiment Words</h4>
+          
+          <div class="matches-grid">
+            <!-- Positive Matches -->
+            <div class="match-box">
+              <div class="match-box-title pos">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                <span>Positive Words (<span id="posCountText">0</span>)</span>
+              </div>
+              <div class="tag-list" id="posTagList">
+                <span class="empty-tag">None found</span>
+              </div>
+            </div>
+
+            <!-- Negative Matches -->
+            <div class="match-box">
+              <div class="match-box-title neg">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm12-5h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                <span>Negative Words (<span id="negCountText">0</span>)</span>
+              </div>
+              <div class="tag-list" id="negTagList">
+                <span class="empty-tag">None found</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Word Bank Reference Card (Educational) -->
+    <section class="word-bank-card" id="wordBankCard">
+      <div class="word-bank-header" id="wordBankToggle">
+        <div class="word-bank-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span>Rule-Based Dictionary (Word Bank)</span>
+        </div>
+        <span class="word-bank-arrow" id="wordBankArrow">▾</span>
+      </div>
+      
+      <div class="word-bank-content">
+        <div class="word-bank-body">
+          <p>This beginner Sentiment Analyzer counts how many positive and negative words appear in your text. You can see the full list of words recognized by the engine below:</p>
+          
+          <div class="word-lists-container">
+            <!-- Positive Word Bank -->
+            <div class="word-list-box">
+              <div class="word-list-title pos">
+                <span>😊 Positive Words</span>
+              </div>
+              <div class="word-grid" id="posWordBankList">
+                <!-- Will be dynamically populated from JS -->
+              </div>
+            </div>
+
+            <!-- Negative Word Bank -->
+            <div class="word-list-box">
+              <div class="word-list-title neg">
+                <span>😢 Negative Words</span>
+              </div>
+              <div class="word-grid" id="negWordBankList">
+                <!-- Will be dynamically populated from JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Built with HTML, CSS & JavaScript | <a href="#" onclick="alert('This app runs entirely in your browser without sending any text to external servers.'); return false;">Privacy Info</a></p>
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
