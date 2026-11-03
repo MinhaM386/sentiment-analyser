@@ -1,6 +1,6 @@
 
 import { pipeline } from
-  "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+"https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2";
 
 let sentimentModel = null;
 
@@ -34,9 +34,10 @@ async function loadModel() {
       "Loading AI model...";
 
     sentimentModel = await pipeline(
-      "sentiment-analysis",
-      "Xenova/distilbert-base-uncased-finetuned-sst-2-english"
-    );
+    "text-classification",
+    "Horizon-Labs/multilingual-sentiment-small",
+    { dtype: "q8" }
+);
   }
   return sentimentModel;
 }
@@ -63,15 +64,30 @@ async function analyzeSentiment() {
 
     const result = await model(text);
 
-    const label = result[0].label;
-    const confidence = result[0].score;
-    const percentage = (confidence * 100).toFixed(2);
+    const label = result[0].label.toLowerCase();
+const confidence = result[0].score;
+const percentage = (confidence * 100).toFixed(2);
 
-    const positive = label === "POSITIVE";
+let sentiment, emoji, resultClass;
 
-    const sentiment = positive ? "Positive" : "Negative";
-    const emoji = positive ? "😊" : "😢";
-    const resultClass = positive ? "positive" : "negative";
+if (label.includes("positive")) {
+    sentiment = "Positive";
+    emoji = "😊";
+    resultClass = "positive";
+}
+else if (label.includes("negative")) {
+    sentiment = "Negative";
+    emoji = "😞";
+    resultClass = "negative";
+}
+else if (label.includes("neutral")) {
+    sentiment = "Neutral";
+    emoji = "😐";
+    resultClass = "neutral";
+}
+else {
+    throw new Error("Unknown sentiment label: " + label);
+}
 
     resultContainer.classList.add("visible");
     resultCard.className = `result-card ${resultClass}`;
